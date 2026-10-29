@@ -1,0 +1,28 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env index.js",
+    "dev": "node --env-file=.env --watch index.js",
+    "db:init": "node --env-file=.env src/database/initPostgres.js",
+    "db:init:postgres": "node --env-file=.env src/database/initPostgres.js",
+    "db:test": "node --env-file=.env src/database/testConnection.js",
+    "build": "node scripts/prepararSwagger.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@vercel/functions": "^3.10.5",
+    "express": "^5.3.0",
+    "pg": "^8.23.1",
+    "swagger-ui-dist": "^5.34.0",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "engines": {
+    "node": "24.x"
+  }
+}
