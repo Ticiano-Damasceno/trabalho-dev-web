@@ -10,6 +10,9 @@ const app = express();
 
 app.use(express.json({ limit: '100kb' }));
 
+app.get(/^\/docs$/, (req, res) => {
+  return res.redirect('/docs/');
+});
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(openapi));
 
 app.get('/', (req, res) => {
