@@ -97,7 +97,7 @@ async function atualizar(req, res, next) {
 async function excluir(req, res, next) {
   const id = req.idValidado;
   try {
-    const excluido = fornecedorRepository.excluir(id);
+    const excluido = await fornecedorRepository.excluir(id);
 
     if (excluido) {
       return res.status(204).send();

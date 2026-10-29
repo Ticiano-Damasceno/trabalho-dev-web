@@ -4,7 +4,7 @@ const fornecedorRepository = require('../repositories/fornecedorRepository');
 async function listarPorFornecedor(req, res, next) {
     const fornecedorId = req.idValidado;
     try {
-        const fornecedor = fornecedorRepository.buscarPorId(fornecedorId);
+        const fornecedor = await fornecedorRepository.buscarPorId(fornecedorId);
 
         if (!fornecedor) {
             return res.status(404).json({
@@ -68,7 +68,7 @@ async function criar(req, res, next) {
             });
         }
 
-        const produto = produtoRepository.criar({
+        const produto = await produtoRepository.criar({
             nome: nome.trim(),
             quantidade_estoque,
             fornecedor_id
@@ -132,7 +132,7 @@ async function atualizar(req, res, next) {
             });
         }
 
-        const fornecedor = fornecedorRepository.buscarPorId(fornecedor_id);
+        const fornecedor = await fornecedorRepository.buscarPorId(fornecedor_id);
 
         if (!fornecedor) {
             return res.status(404).json({
@@ -140,7 +140,7 @@ async function atualizar(req, res, next) {
             });
         }
 
-        const produto = produtoRepository.atualizar(id, {
+        const produto = await produtoRepository.atualizar(id, {
             nome: nome.trim(),
             quantidade_estoque,
             fornecedor_id
