@@ -1,18 +1,17 @@
 CREATE TABLE IF NOT EXISTS fornecedores (
-    id INTEGER PRIMARY KEY,
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nome TEXT NOT NULL CHECK (length(trim(nome)) > 0),
-    cnpj TEXT NOT NULL CHECK (
+    cnpj VARCHAR(14) NOT NULL CHECK (
         length(cnpj) = 14
-        AND cnpj NOT GLOB '*[^0-9]*'
+        AND cnpj !~ '[^0-9]'
     )
 );
 
 CREATE TABLE IF NOT EXISTS produtos (
-    id INTEGER PRIMARY KEY,
+    id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nome TEXT NOT NULL CHECK (length(trim(nome)) > 0),
     quantidade_estoque INTEGER NOT NULL CHECK (
-        typeof(quantidade_estoque) = 'integer'
-        AND quantidade_estoque >= 0
+        quantidade_estoque >= 0
     ),
     fornecedor_id INTEGER NOT NULL,
     FOREIGN KEY (fornecedor_id)

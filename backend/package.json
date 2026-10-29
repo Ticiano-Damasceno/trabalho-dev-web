@@ -4,9 +4,11 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "dev": "node --watch index.js",
-    "db:init": "node src/database/init.js"
+    "start": "node --env-file-if-exists=.env index.js",
+    "dev": "node --env-file=.env --watch index.js",
+    "db:init": "node --env-file=.env src/database/initPostgres.js",
+    "db:init:postgres": "node --env-file=.env src/database/initPostgres.js",
+    "db:test": "node --env-file=.env src/database/testConnection.js"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +16,7 @@
   "type": "commonjs",
   "dependencies": {
     "express": "^5.3.0",
+    "pg": "^8.23.1",
     "swagger-ui-express": "^5.0.1"
   }
 }

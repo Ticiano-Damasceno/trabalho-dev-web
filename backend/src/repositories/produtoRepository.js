@@ -1,46 +1,54 @@
-const db = require('../database/connection');
+const pool = require('../database/postgres');
 
-function listarPorFornecedor(fornecedorId) {
-  return db.prepare(`
+async function listarPorFornecedor(fornecedorId) {
+  const resultado = await pool.query(`
     SELECT id, nome, quantidade_estoque, fornecedor_id
     FROM produtos
-    WHERE fornecedor_id = ?
+    WHERE fornecedor_id = $1
     ORDER BY nome, id
-  `).all(fornecedorId);
+  `, [fornecedorId]);
+
+  return resultado.rows;
 }
 
-function criar({ nome, quantidade_estoque, fornecedor_id }) {
-  return db.prepare(`
+async function criar({ nome, quantidade_estoque, fornecedor_id }) {
+  const resultado = await pool.query(`
     INSERT INTO produtos (nome, quantidade_estoque, fornecedor_id)
-    VALUES (?, ?, ?)
+    VALUES ($1, $2, $3)
     RETURNING id, nome, quantidade_estoque, fornecedor_id
-  `).get(nome, quantidade_estoque, fornecedor_id);
+  `, [nome, quantidade_estoque, fornecedor_id]);
+
+  return resultado.rows[0];
 }
 
-function buscarPorId(id) {
-  return db.prepare(`
+async function buscarPorId(id) {
+  const resultado = await pool.query(`
     SELECT id, nome, quantidade_estoque, fornecedor_id
     FROM produtos
-    WHERE id = ?
-  `).get(id);
+    WHERE id = $1
+  `, [id]);
+
+  return resultado.rows[0];
 }
 
-function atualizar(id, { nome, quantidade_estoque, fornecedor_id }) {
-  return db.prepare(`
+async function atualizar(id, { nome, quantidade_estoque, fornecedor_id }) {
+  const resultado = await pool.query(`
     UPDATE produtos
-    SET nome = ?, quantidade_estoque = ?, fornecedor_id = ?
-    WHERE id = ?
+    SET nome = $1, quantidade_estoque = $2, fornecedor_id = $3
+    WHERE id = $4
     RETURNING id, nome, quantidade_estoque, fornecedor_id
-  `).get(nome, quantidade_estoque, fornecedor_id, id);
+  `, [nome, quantidade_estoque, fornecedor_id, id]);
+
+  return resultado.rows[0];
 }
 
-function excluir(id) {
-  const resultado = db.prepare(`
+async function excluir(id) {
+  const resultado = await pool.query(`
     DELETE FROM produtos
-    WHERE id = ?
-  `).run(id);
+    WHERE id = $1
+  `, [id]);
 
-  return resultado.changes > 0;
+  return resultado.rowCount > 0;
 }
 
-module.exports = { listarPorFornecedor, criar, buscarPorId, atualizar, excluir };
+module.exports = {listarPorFornecedor,criar,buscarPorId,atualizar,excluir};

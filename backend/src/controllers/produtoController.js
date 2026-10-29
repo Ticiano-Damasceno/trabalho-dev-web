@@ -1,7 +1,7 @@
 const produtoRepository = require('../repositories/produtoRepository');
 const fornecedorRepository = require('../repositories/fornecedorRepository');
 
-function listarPorFornecedor(req, res, next) {
+async function listarPorFornecedor(req, res, next) {
     const fornecedorId = req.idValidado;
     try {
         const fornecedor = fornecedorRepository.buscarPorId(fornecedorId);
@@ -12,7 +12,7 @@ function listarPorFornecedor(req, res, next) {
             });
         }
 
-        const produtos = produtoRepository.listarPorFornecedor(fornecedorId);
+        const produtos = await produtoRepository.listarPorFornecedor(fornecedorId);
 
         return res.json(produtos);
     } catch (error) {
@@ -21,25 +21,30 @@ function listarPorFornecedor(req, res, next) {
 }
 
 function validarProduto(nome, quantidadeEstoque, fornecedorId) {
-    if (typeof nome !== 'string' || nome.trim() === '') {
-        return 'O nome do produto é obrigatório.';
-    }
+  if (typeof nome !== 'string' || nome.trim() === '') {
+    return 'O nome do produto é obrigatório.';
+  }
 
-    if (
-        !Number.isSafeInteger(quantidadeEstoque) ||
-        quantidadeEstoque < 0
-    ) {
-        return 'A quantidade em estoque deve ser um número inteiro não negativo.';
-    }
+  if (
+    !Number.isSafeInteger(quantidadeEstoque) ||
+    quantidadeEstoque < 0 ||
+    quantidadeEstoque > 2147483647
+  ) {
+    return 'O estoque deve ser um número inteiro entre 0 e 2147483647.';
+  }
 
-    if (!Number.isSafeInteger(fornecedorId) || fornecedorId <= 0) {
-        return 'O fornecedor deve ser identificado por um número inteiro positivo.';
-    }
+  if (
+    !Number.isSafeInteger(fornecedorId) ||
+    fornecedorId <= 0 ||
+    fornecedorId > 2147483647
+  ) {
+    return 'O ID do fornecedor deve ser um número inteiro entre 1 e 2147483647.';
+  }
 
-    return null;
+  return null;
 }
 
-function criar(req, res, next) {
+async function criar(req, res, next) {
     const { nome, quantidade_estoque, fornecedor_id } = req.body || {};
 
     const erroValidacao = validarProduto(
@@ -55,7 +60,7 @@ function criar(req, res, next) {
     }
 
     try {
-        const fornecedor = fornecedorRepository.buscarPorId(fornecedor_id);
+        const fornecedor = await fornecedorRepository.buscarPorId(fornecedor_id);
 
         if (!fornecedor) {
             return res.status(404).json({
@@ -85,10 +90,10 @@ function obterIdProduto(valor) {
     return id;
 }
 
-function buscarPorId(req, res, next) {
+async function buscarPorId(req, res, next) {
     const id = req.idValidado;
     try {
-        const produto = produtoRepository.buscarPorId(id);
+        const produto = await produtoRepository.buscarPorId(id);
 
         if (!produto) {
             return res.status(404).json({
@@ -102,7 +107,7 @@ function buscarPorId(req, res, next) {
     }
 }
 
-function atualizar(req, res, next) {
+async function atualizar(req, res, next) {
     const id = req.idValidado;
     const { nome, quantidade_estoque, fornecedor_id } = req.body || {};
 
@@ -119,7 +124,7 @@ function atualizar(req, res, next) {
     }
 
     try {
-        const produtoExistente = produtoRepository.buscarPorId(id);
+        const produtoExistente = await produtoRepository.buscarPorId(id);
 
         if (!produtoExistente) {
             return res.status(404).json({
@@ -153,10 +158,10 @@ function atualizar(req, res, next) {
     }
 }
 
-function excluir(req, res, next) {
+async function excluir(req, res, next) {
     const id = req.idValidado;
     try {
-        const excluido = produtoRepository.excluir(id);
+        const excluido = await produtoRepository.excluir(id);
 
         if (!excluido) {
             return res.status(404).json({

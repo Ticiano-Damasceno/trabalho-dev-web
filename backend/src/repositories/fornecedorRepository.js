@@ -1,50 +1,58 @@
-const db = require('../database/connection');
+const pool = require('../database/postgres');
 
-function listar() {
-  return db.prepare(`
+async function listar() {
+  const resultado = await pool.query(`
     SELECT id, nome, cnpj
     FROM fornecedores
     ORDER BY nome, id
-  `).all();
+  `);
+
+  return resultado.rows;
 }
 
-function criar({ nome, cnpj }) {
-  return db.prepare(`
+async function criar({ nome, cnpj }) {
+  const resultado = await pool.query(`
     INSERT INTO fornecedores (nome, cnpj)
-    VALUES (?, ?)
+    VALUES ($1, $2)
     RETURNING id, nome, cnpj
-  `).get(nome, cnpj);
+  `, [nome, cnpj]);
+
+  return resultado.rows[0];
 }
 
-function buscarPorId(id) {
-  return db.prepare(`
+async function buscarPorId(id) {
+  const resultado = await pool.query(`
     SELECT id, nome, cnpj
     FROM fornecedores
-    WHERE id = ?
-  `).get(id);
+    WHERE id = $1
+  `, [id]);
+
+  return resultado.rows[0];
 }
 
-function atualizar(id, { nome, cnpj }) {
-  return db.prepare(`
+async function atualizar(id, { nome, cnpj }) {
+  const resultado = await pool.query(`
     UPDATE fornecedores
-    SET nome = ?, cnpj = ?
-    WHERE id = ?
+    SET nome = $1, cnpj = $2
+    WHERE id = $3
     RETURNING id, nome, cnpj
-  `).get(nome, cnpj, id);
+  `, [nome, cnpj, id]);
+
+  return resultado.rows[0];
 }
 
-function excluir(id) {
-  const resultado = db.prepare(`
+async function excluir(id) {
+  const resultado = await pool.query(`
     DELETE FROM fornecedores
-    WHERE id = ?
+    WHERE id = $1
       AND NOT EXISTS (
         SELECT 1
         FROM produtos
         WHERE fornecedor_id = fornecedores.id
       )
-  `).run(id);
+  `, [id]);
 
-  return resultado.changes > 0;
+  return resultado.rowCount > 0;
 }
 
 module.exports = { listar, criar, buscarPorId, atualizar, excluir };

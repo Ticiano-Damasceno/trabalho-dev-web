@@ -9,6 +9,12 @@ function tratamentoErros(error, req, res, next) {
     });
   }
 
+  if (error.code === '23503') {
+    return res.status(409).json({
+      mensagem: 'A operação não pôde ser concluída devido ao vínculo entre fornecedor e produto.'
+    });
+  }
+
   const status = (
     Number.isInteger(error.status) &&
     error.status >= 400 &&

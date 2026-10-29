@@ -1,8 +1,8 @@
 const fornecedorRepository = require('../repositories/fornecedorRepository');
 
-function listar(req, res, next) {
+async function listar(req, res, next) {
   try {
-    const fornecedores = fornecedorRepository.listar();
+    const fornecedores =  await fornecedorRepository.listar();
 
     return res.json(fornecedores);
   } catch (error) {
@@ -10,7 +10,7 @@ function listar(req, res, next) {
   }
 }
 
-function criar(req, res, next) {
+async function criar(req, res, next) {
   const { nome, cnpj } = req.body || {};
   const erroValidacao = validarFornecedor(nome, cnpj);
 
@@ -21,7 +21,7 @@ function criar(req, res, next) {
   }
 
   try {
-    const fornecedor = fornecedorRepository.criar({
+    const fornecedor = await fornecedorRepository.criar({
       nome: nome.trim(),
       cnpj
     });
@@ -32,10 +32,10 @@ function criar(req, res, next) {
   }
 }
 
-function buscarPorId(req, res, next) {
+async function buscarPorId(req, res, next) {
   const id = req.idValidado;
   try {
-    const fornecedor = fornecedorRepository.buscarPorId(id);
+    const fornecedor = await fornecedorRepository.buscarPorId(id);
 
     if (!fornecedor) {
       return res.status(404).json({
@@ -65,7 +65,7 @@ function validarFornecedor(nome, cnpj) {
   return null;
 }
 
-function atualizar(req, res, next) {
+async function atualizar(req, res, next) {
   const id = req.idValidado;
   const { nome, cnpj } = req.body || {};
   const erroValidacao = validarFornecedor(nome, cnpj);
@@ -77,7 +77,7 @@ function atualizar(req, res, next) {
   }
 
   try {
-    const fornecedor = fornecedorRepository.atualizar(id, {
+    const fornecedor = await fornecedorRepository.atualizar(id, {
       nome: nome.trim(),
       cnpj
     });
@@ -94,7 +94,7 @@ function atualizar(req, res, next) {
   }
 }
 
-function excluir(req, res, next) {
+async function excluir(req, res, next) {
   const id = req.idValidado;
   try {
     const excluido = fornecedorRepository.excluir(id);
@@ -103,7 +103,7 @@ function excluir(req, res, next) {
       return res.status(204).send();
     }
 
-    const fornecedor = fornecedorRepository.buscarPorId(id);
+    const fornecedor = await fornecedorRepository.buscarPorId(id);
 
     if (!fornecedor) {
       return res.status(404).json({

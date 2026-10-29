@@ -133,7 +133,7 @@ module.exports = {
                         schema: {
                             type: 'integer',
                             minimum: 1,
-                            maximum: 9007199254740991
+                            maximum: 2147483647
                         },
                         example: 1
                     }
@@ -169,7 +169,7 @@ module.exports = {
                         schema: {
                             type: 'integer',
                             minimum: 1,
-                            maximum: 9007199254740991
+                            maximum: 2147483647
                         },
                         example: 1
                     }
@@ -216,7 +216,7 @@ module.exports = {
                         schema: {
                             type: 'integer',
                             minimum: 1,
-                            maximum: 9007199254740991
+                            maximum: 2147483647
                         },
                         example: 1
                     }
@@ -270,7 +270,7 @@ module.exports = {
                         schema: {
                             type: 'integer',
                             minimum: 1,
-                            maximum: 9007199254740991
+                            maximum: 2147483647
                         },
                         example: 1
                     }
@@ -349,13 +349,13 @@ module.exports = {
                                     quantidade_estoque: {
                                         type: 'integer',
                                         minimum: 0,
-                                        maximum: 9007199254740991,
+                                        maximum: 2147483647,
                                         example: 10
                                     },
                                     fornecedor_id: {
                                         type: 'integer',
                                         minimum: 1,
-                                        maximum: 9007199254740991,
+                                        maximum: 2147483647,
                                         example: 1
                                     }
                                 }
@@ -384,6 +384,9 @@ module.exports = {
                     '404': {
                         description: 'Fornecedor não encontrado.'
                     },
+                    '409': {
+                        description: 'Conflito no vínculo entre fornecedor e produto.'
+                    },
                     '500': {
                         description: 'Erro ao cadastrar produto.'
                     }
@@ -400,7 +403,7 @@ module.exports = {
                     schema: {
                         type: 'integer',
                         minimum: 1,
-                        maximum: 9007199254740991
+                        maximum: 2147483647
                     },
                     example: 1
                 }
@@ -458,6 +461,7 @@ module.exports = {
                     },
                     '400': { description: 'ID ou dados do produto inválidos.' },
                     '404': { description: 'Produto ou fornecedor não encontrado.' },
+                    '409': { description: 'Conflito no vínculo entre fornecedor e produto.' },
                     '500': { description: 'Erro ao atualizar produto.' }
                 }
             },

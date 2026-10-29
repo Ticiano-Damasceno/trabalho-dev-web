@@ -4,6 +4,7 @@ function validarId(req, res, next, valor) {
   if (
     !Number.isSafeInteger(id) ||
     id <= 0 ||
+    id > 2147483647 ||
     String(id) !== valor
   ) {
     return res.status(400).json({
