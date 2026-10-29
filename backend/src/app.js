@@ -3,6 +3,7 @@ const swaggerUi = require('swagger-ui-express');
 
 const openapi = require('./docs/openapi');
 const fornecedorRoutes = require('./routes/fornecedorRoutes');
+const produtoRoutes = require('./routes/produtoRoutes');
 
 const app = express();
 
@@ -17,5 +18,6 @@ app.get('/', (req, res) => {
 });
 
 app.use('/fornecedores', fornecedorRoutes);
+app.use('/produtos', produtoRoutes);
 
 module.exports = app;
