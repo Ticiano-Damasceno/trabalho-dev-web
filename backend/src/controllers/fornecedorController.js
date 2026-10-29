@@ -1,20 +1,16 @@
 const fornecedorRepository = require('../repositories/fornecedorRepository');
 
-function listar(req, res) {
+function listar(req, res, next) {
   try {
     const fornecedores = fornecedorRepository.listar();
 
     return res.json(fornecedores);
   } catch (error) {
-    console.error('Erro ao listar fornecedores:', error);
-
-    return res.status(500).json({
-      mensagem: 'Não foi possível listar os fornecedores.'
-    });
+    return next(error);
   }
 }
 
-function criar(req, res) {
+function criar(req, res, next) {
   const { nome, cnpj } = req.body || {};
   const erroValidacao = validarFornecedor(nome, cnpj);
 
@@ -32,24 +28,12 @@ function criar(req, res) {
 
     return res.status(201).json(fornecedor);
   } catch (error) {
-    console.error('Erro ao cadastrar fornecedor:', error);
-
-    return res.status(500).json({
-      mensagem: 'Não foi possível cadastrar o fornecedor.'
-    });
+    return next(error);
   }
 }
 
-function buscarPorId(req, res) {
-  const idRecebido = req.params.id;
-  const id = Number(idRecebido);
-
-  if (!/^[1-9][0-9]*$/.test(idRecebido) || !Number.isSafeInteger(id)) {
-    return res.status(400).json({
-      mensagem: 'O ID deve ser um número inteiro positivo válido.'
-    });
-  }
-
+function buscarPorId(req, res, next) {
+  const id = req.idValidado;
   try {
     const fornecedor = fornecedorRepository.buscarPorId(id);
 
@@ -61,11 +45,7 @@ function buscarPorId(req, res) {
 
     return res.json(fornecedor);
   } catch (error) {
-    console.error('Erro ao consultar fornecedor:', error);
-
-    return res.status(500).json({
-      mensagem: 'Não foi possível consultar o fornecedor.'
-    });
+    return next(error);
   }
 }
 
@@ -85,16 +65,8 @@ function validarFornecedor(nome, cnpj) {
   return null;
 }
 
-function atualizar(req, res) {
-  const idRecebido = req.params.id;
-  const id = Number(idRecebido);
-
-  if (!/^[1-9][0-9]*$/.test(idRecebido) || !Number.isSafeInteger(id)) {
-    return res.status(400).json({
-      mensagem: 'O ID deve ser um número inteiro positivo válido.'
-    });
-  }
-
+function atualizar(req, res, next) {
+  const id = req.idValidado;
   const { nome, cnpj } = req.body || {};
   const erroValidacao = validarFornecedor(nome, cnpj);
 
@@ -118,24 +90,12 @@ function atualizar(req, res) {
 
     return res.json(fornecedor);
   } catch (error) {
-    console.error('Erro ao atualizar fornecedor:', error);
-
-    return res.status(500).json({
-      mensagem: 'Não foi possível atualizar o fornecedor.'
-    });
+    return next(error);
   }
 }
 
-function excluir(req, res) {
-  const idRecebido = req.params.id;
-  const id = Number(idRecebido);
-
-  if (!/^[1-9][0-9]*$/.test(idRecebido) || !Number.isSafeInteger(id)) {
-    return res.status(400).json({
-      mensagem: 'O ID deve ser um número inteiro positivo válido.'
-    });
-  }
-
+function excluir(req, res, next) {
+  const id = req.idValidado;
   try {
     const excluido = fornecedorRepository.excluir(id);
 
@@ -155,11 +115,7 @@ function excluir(req, res) {
       mensagem: 'Não é possível excluir um fornecedor que possui produtos.'
     });
   } catch (error) {
-    console.error('Erro ao excluir fornecedor:', error);
-
-    return res.status(500).json({
-      mensagem: 'Não foi possível excluir o fornecedor.'
-    });
+    return next(error);
   }
 }
 

@@ -111,7 +111,7 @@ module.exports = {
                                     }
                                 },
                                 example: {
-                                    mensagem: 'Não foi possível listar os fornecedores.'
+                                    mensagem: 'Erro interno do servidor. Tente novamente.'
                                 }
                             }
                         }
