@@ -84,16 +84,6 @@ async function criar(req, res, next) {
     }
 }
 
-function obterIdProduto(valor) {
-    const id = Number(valor);
-
-    if (!/^[1-9][0-9]*$/.test(valor) || !Number.isSafeInteger(id)) {
-        return null;
-    }
-
-    return id;
-}
-
 async function buscarPorId(req, res, next) {
     const id = req.idValidado;
     try {
