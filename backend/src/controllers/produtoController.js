@@ -20,38 +20,41 @@ async function listarPorFornecedor(req, res, next) {
     }
 }
 
-function validarProduto(nome, quantidadeEstoque, fornecedorId) {
-  if (typeof nome !== 'string' || nome.trim() === '') {
-    return 'O nome do produto é obrigatório.';
-  }
+function validarProduto(nome, quantidadeEstoque, fornecedorId, descricao) {
+    if (typeof nome !== 'string' || nome.trim() === '') {
+        return 'O nome do produto é obrigatório.';
+    }
 
-  if (
-    !Number.isSafeInteger(quantidadeEstoque) ||
-    quantidadeEstoque < 0 ||
-    quantidadeEstoque > 2147483647
-  ) {
-    return 'O estoque deve ser um número inteiro entre 0 e 2147483647.';
-  }
+    if (
+        !Number.isSafeInteger(quantidadeEstoque) ||
+        quantidadeEstoque < 0 ||
+        quantidadeEstoque > 2147483647
+    ) {
+        return 'O estoque deve ser um número inteiro entre 0 e 2147483647.';
+    }
 
-  if (
-    !Number.isSafeInteger(fornecedorId) ||
-    fornecedorId <= 0 ||
-    fornecedorId > 2147483647
-  ) {
-    return 'O ID do fornecedor deve ser um número inteiro entre 1 e 2147483647.';
-  }
+    if (
+        !Number.isSafeInteger(fornecedorId) ||
+        fornecedorId <= 0 ||
+        fornecedorId > 2147483647
+    ) {
+        return 'O ID do fornecedor deve ser um número inteiro entre 1 e 2147483647.';
+    }
 
-  return null;
+    if (
+        descricao !== undefined &&
+        descricao !== null &&
+        typeof descricao !== 'string'
+    ) {
+        return 'A descrição deve ser informada como texto.';
+    }
+
+    return null;
 }
 
 async function criar(req, res, next) {
-    const { nome, quantidade_estoque, fornecedor_id } = req.body || {};
-
-    const erroValidacao = validarProduto(
-        nome,
-        quantidade_estoque,
-        fornecedor_id
-    );
+    const { nome, descricao, quantidade_estoque, fornecedor_id } = req.body || {};
+    const erroValidacao = validarProduto(nome, quantidade_estoque, fornecedor_id, descricao);
 
     if (erroValidacao) {
         return res.status(400).json({
@@ -70,6 +73,7 @@ async function criar(req, res, next) {
 
         const produto = await produtoRepository.criar({
             nome: nome.trim(),
+            descricao: descricao?.trim() || null,
             quantidade_estoque,
             fornecedor_id
         });
@@ -109,13 +113,9 @@ async function buscarPorId(req, res, next) {
 
 async function atualizar(req, res, next) {
     const id = req.idValidado;
-    const { nome, quantidade_estoque, fornecedor_id } = req.body || {};
+    const { nome, descricao, quantidade_estoque, fornecedor_id } = req.body || {};
+    const erroValidacao = validarProduto(nome, quantidade_estoque, fornecedor_id, descricao);
 
-    const erroValidacao = validarProduto(
-        nome,
-        quantidade_estoque,
-        fornecedor_id
-    );
 
     if (erroValidacao) {
         return res.status(400).json({
@@ -142,6 +142,7 @@ async function atualizar(req, res, next) {
 
         const produto = await produtoRepository.atualizar(id, {
             nome: nome.trim(),
+            descricao: descricao?.trim() || null,
             quantidade_estoque,
             fornecedor_id
         });

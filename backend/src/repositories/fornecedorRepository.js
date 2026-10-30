@@ -1,8 +1,12 @@
 const pool = require('../database/postgres');
 
+const camposFornecedor = `
+  id, nome, cnpj, telefone, email, criado_em, atualizado_em
+`;
+
 async function listar() {
   const resultado = await pool.query(`
-    SELECT id, nome, cnpj
+    SELECT ${camposFornecedor}
     FROM fornecedores
     ORDER BY nome, id
   `);
@@ -10,19 +14,19 @@ async function listar() {
   return resultado.rows;
 }
 
-async function criar({ nome, cnpj }) {
+async function criar({ nome, cnpj, telefone = null, email = null }) {
   const resultado = await pool.query(`
-    INSERT INTO fornecedores (nome, cnpj)
-    VALUES ($1, $2)
-    RETURNING id, nome, cnpj
-  `, [nome, cnpj]);
+    INSERT INTO fornecedores (nome, cnpj, telefone, email)
+    VALUES ($1, $2, $3, $4)
+    RETURNING ${camposFornecedor}
+  `, [nome, cnpj, telefone, email]);
 
   return resultado.rows[0];
 }
 
 async function buscarPorId(id) {
   const resultado = await pool.query(`
-    SELECT id, nome, cnpj
+    SELECT ${camposFornecedor}
     FROM fornecedores
     WHERE id = $1
   `, [id]);
@@ -30,13 +34,20 @@ async function buscarPorId(id) {
   return resultado.rows[0];
 }
 
-async function atualizar(id, { nome, cnpj }) {
+async function atualizar(
+  id,
+  { nome, cnpj, telefone = null, email = null }
+) {
   const resultado = await pool.query(`
     UPDATE fornecedores
-    SET nome = $1, cnpj = $2
-    WHERE id = $3
-    RETURNING id, nome, cnpj
-  `, [nome, cnpj, id]);
+    SET
+      nome = $1,
+      cnpj = $2,
+      telefone = $3,
+      email = $4
+    WHERE id = $5
+    RETURNING ${camposFornecedor}
+  `, [nome, cnpj, telefone, email, id]);
 
   return resultado.rows[0];
 }
@@ -55,4 +66,4 @@ async function excluir(id) {
   return resultado.rowCount > 0;
 }
 
-module.exports = { listar, criar, buscarPorId, atualizar, excluir };
+module.exports = { listar,  criar,  buscarPorId,  atualizar,  excluir };
