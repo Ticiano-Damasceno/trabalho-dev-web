@@ -1,3 +1,146 @@
+const produtoEntrada = {
+    type: 'object',
+    required: ['nome', 'quantidade_estoque', 'fornecedor_id'],
+    properties: {
+        nome: {
+            type: 'string',
+            minLength: 1,
+            pattern: '\\S',
+            example: 'Arroz 1 kg'
+        },
+        descricao: {
+            type: 'string',
+            nullable: true,
+            description:
+                'Opcional. Ausente, null ou texto vazio é armazenado como null.',
+            example: 'Arroz branco, pacote de 1 kg.'
+        },
+        quantidade_estoque: {
+            type: 'integer',
+            minimum: 0,
+            maximum: 2147483647,
+            example: 10
+        },
+        fornecedor_id: {
+            type: 'integer',
+            minimum: 1,
+            maximum: 2147483647,
+            description: 'Identificador de um fornecedor existente.',
+            example: 1
+        }
+    }
+};
+
+const produtoResposta = {
+    type: 'object',
+    required: [
+        'id',
+        'fornecedor_id',
+        'nome',
+        'descricao',
+        'quantidade_estoque',
+        'criado_em',
+        'atualizado_em'
+    ],
+    properties: {
+        id: {
+            type: 'integer',
+            minimum: 1,
+            maximum: 2147483647,
+            readOnly: true,
+            example: 1
+        },
+        ...produtoEntrada.properties,
+        criado_em: {
+            type: 'string',
+            format: 'date-time',
+            readOnly: true,
+            description: 'Data de criação administrada pelo banco.',
+            example: '2026-10-30T12:00:00.000Z'
+        },
+        atualizado_em: {
+            type: 'string',
+            format: 'date-time',
+            readOnly: true,
+            description: 'Data da última atualização administrada pelo banco.',
+            example: '2026-10-30T13:00:00.000Z'
+        }
+    }
+};
+
+const fornecedorEntrada = {
+    type: 'object',
+    required: ['nome', 'cnpj'],
+    properties: {
+        nome: {
+            type: 'string',
+            minLength: 1,
+            pattern: '\\S',
+            example: 'Distribuidora Exemplo'
+        },
+        cnpj: {
+            type: 'string',
+            minLength: 14,
+            maxLength: 14,
+            pattern: '^[0-9]{14}$',
+            example: '12345678000199'
+        },
+        telefone: {
+            type: 'string',
+            nullable: true,
+            maxLength: 30,
+            description:
+                'Opcional. Quando preenchido, deve conter de 10 a 15 dígitos, incluindo DDD. Aceita pontuação. Ausente, null ou vazio é armazenado como null.',
+            example: '(85) 99999-1234'
+        },
+        email: {
+            type: 'string',
+            nullable: true,
+            maxLength: 254,
+            description:
+                'Opcional. Quando preenchido, deve ter formato como contato@empresa.com. Ausente, null ou vazio é armazenado como null.',
+            example: 'contato@example.com'
+        }
+    }
+};
+
+const fornecedorResposta = {
+    type: 'object',
+    required: [
+        'id',
+        'nome',
+        'cnpj',
+        'telefone',
+        'email',
+        'criado_em',
+        'atualizado_em'
+    ],
+    properties: {
+        id: {
+            type: 'integer',
+            minimum: 1,
+            maximum: 2147483647,
+            readOnly: true,
+            example: 1
+        },
+        ...fornecedorEntrada.properties,
+        criado_em: {
+            type: 'string',
+            format: 'date-time',
+            readOnly: true,
+            description: 'Data de criação administrada pelo banco.',
+            example: '2026-10-30T12:00:00.000Z'
+        },
+        atualizado_em: {
+            type: 'string',
+            format: 'date-time',
+            readOnly: true,
+            description: 'Data da última atualização administrada pelo banco.',
+            example: '2026-10-30T13:00:00.000Z'
+        }
+    }
+};
+
 module.exports = {
     openapi: '3.0.3',
 
@@ -11,6 +154,15 @@ module.exports = {
         { url: '/' }
     ],
 
+    components: {
+        schemas: {
+            FornecedorEntrada: fornecedorEntrada,
+            Fornecedor: fornecedorResposta,
+            ProdutoEntrada: produtoEntrada,
+            Produto: produtoResposta
+        }
+    },
+
     paths: {
         '/fornecedores': {
             post: {
@@ -22,23 +174,7 @@ module.exports = {
                     content: {
                         'application/json': {
                             schema: {
-                                type: 'object',
-                                required: ['nome', 'cnpj'],
-                                properties: {
-                                    nome: {
-                                        type: 'string',
-                                        minLength: 1,
-                                        pattern: '\\S',
-                                        example: 'Distribuidora Exemplo'
-                                    },
-                                    cnpj: {
-                                        type: 'string',
-                                        minLength: 14,
-                                        maxLength: 14,
-                                        pattern: '^[0-9]{14}$',
-                                        example: '12345678000190'
-                                    }
-                                }
+                                $ref: '#/components/schemas/FornecedorEntrada'
                             }
                         }
                     }
@@ -49,16 +185,14 @@ module.exports = {
                         description: 'Fornecedor cadastrado com sucesso.',
                         content: {
                             'application/json': {
-                                example: {
-                                    id: 1,
-                                    nome: 'Distribuidora Exemplo',
-                                    cnpj: '12345678000190'
+                                schema: {
+                                    $ref: '#/components/schemas/Fornecedor'
                                 }
                             }
                         }
                     },
                     '400': {
-                        description: 'Nome ou CNPJ inválido.'
+                        description: 'Nome, CNPJ, telefone ou e-mail inválido.'
                     },
                     '500': {
                         description: 'Erro ao cadastrar fornecedor.'
@@ -77,23 +211,7 @@ module.exports = {
                                 schema: {
                                     type: 'array',
                                     items: {
-                                        type: 'object',
-                                        required: ['id', 'nome', 'cnpj'],
-                                        properties: {
-                                            id: {
-                                                type: 'integer',
-                                                example: 1
-                                            },
-                                            nome: {
-                                                type: 'string',
-                                                example: 'Distribuidora Exemplo'
-                                            },
-                                            cnpj: {
-                                                type: 'string',
-                                                pattern: '^[0-9]{14}$',
-                                                example: '12345678000190'
-                                            }
-                                        }
+                                        $ref: '#/components/schemas/Fornecedor'
                                     }
                                 }
                             }
@@ -160,7 +278,7 @@ module.exports = {
             put: {
                 tags: ['Fornecedores'],
                 summary: 'Atualizar fornecedor',
-
+                description: 'Substitui os dados editáveis do fornecedor. Nome e CNPJ são obrigatórios. Omitir telefone ou e-mail, enviar null ou texto vazio limpa o valor anterior. As datas são administradas pelo banco.',
                 parameters: [
                     {
                         name: 'id',
@@ -184,16 +302,16 @@ module.exports = {
                         description: 'Fornecedor atualizado com sucesso.',
                         content: {
                             'application/json': {
-                                example: {
-                                    id: 1,
-                                    nome: 'Distribuidora Exemplo Atualizada',
-                                    cnpj: '12345678000190'
+                                'application/json': {
+                                    schema: {
+                                        $ref: '#/components/schemas/Fornecedor'
+                                    }
                                 }
                             }
                         }
                     },
                     '400': {
-                        description: 'ID, nome ou CNPJ inválido.'
+                        description: 'ID, nome, CNPJ, telefone ou e-mail inválido.'
                     },
                     '404': {
                         description: 'Fornecedor não encontrado.'
@@ -228,18 +346,7 @@ module.exports = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    type: 'object',
-                                    required: ['id', 'nome', 'cnpj'],
-                                    properties: {
-                                        id: { type: 'integer' },
-                                        nome: { type: 'string' },
-                                        cnpj: { type: 'string' }
-                                    }
-                                },
-                                example: {
-                                    id: 1,
-                                    nome: 'Distribuidora Exemplo',
-                                    cnpj: '12345678000190'
+                                    $ref: '#/components/schemas/Fornecedor'
                                 }
                             }
                         }
@@ -284,32 +391,7 @@ module.exports = {
                                 schema: {
                                     type: 'array',
                                     items: {
-                                        type: 'object',
-                                        required: [
-                                            'id',
-                                            'nome',
-                                            'quantidade_estoque',
-                                            'fornecedor_id'
-                                        ],
-                                        properties: {
-                                            id: {
-                                                type: 'integer',
-                                                example: 1
-                                            },
-                                            nome: {
-                                                type: 'string',
-                                                example: 'Produto de teste'
-                                            },
-                                            quantidade_estoque: {
-                                                type: 'integer',
-                                                minimum: 0,
-                                                example: 5
-                                            },
-                                            fornecedor_id: {
-                                                type: 'integer',
-                                                example: 1
-                                            }
-                                        }
+                                        $ref: '#/components/schemas/Produto'
                                     }
                                 }
                             }
@@ -337,28 +419,7 @@ module.exports = {
                     content: {
                         'application/json': {
                             schema: {
-                                type: 'object',
-                                required: ['nome', 'quantidade_estoque', 'fornecedor_id'],
-                                properties: {
-                                    nome: {
-                                        type: 'string',
-                                        minLength: 1,
-                                        pattern: '\\S',
-                                        example: 'Arroz 1 kg'
-                                    },
-                                    quantidade_estoque: {
-                                        type: 'integer',
-                                        minimum: 0,
-                                        maximum: 2147483647,
-                                        example: 10
-                                    },
-                                    fornecedor_id: {
-                                        type: 'integer',
-                                        minimum: 1,
-                                        maximum: 2147483647,
-                                        example: 1
-                                    }
-                                }
+                                $ref: '#/components/schemas/ProdutoEntrada'
                             }
                         }
                     }
@@ -369,11 +430,8 @@ module.exports = {
                         description: 'Produto cadastrado com sucesso.',
                         content: {
                             'application/json': {
-                                example: {
-                                    id: 1,
-                                    nome: 'Arroz 1 kg',
-                                    quantidade_estoque: 10,
-                                    fornecedor_id: 1
+                                schema: {
+                                    $ref: '#/components/schemas/Produto'
                                 }
                             }
                         }
@@ -419,23 +477,7 @@ module.exports = {
                         content: {
                             'application/json': {
                                 schema: {
-                                    type: 'object',
-                                    required: [
-                                        'id',
-                                        'nome',
-                                        'quantidade_estoque',
-                                        'fornecedor_id'
-                                    ],
-                                    properties: {
-                                        id: { type: 'integer', example: 1 },
-                                        nome: { type: 'string', example: 'Arroz 1 kg' },
-                                        quantidade_estoque: {
-                                            type: 'integer',
-                                            minimum: 0,
-                                            example: 10
-                                        },
-                                        fornecedor_id: { type: 'integer', example: 1 }
-                                    }
+                                    $ref: '#/components/schemas/Produto'
                                 }
                             }
                         }
@@ -449,7 +491,7 @@ module.exports = {
             put: {
                 tags: ['Produtos'],
                 summary: 'Atualizar produto',
-                description: 'Exige nome, quantidade em estoque e fornecedor.',
+                description: 'Substitui os dados editáveis do produto. Nome, quantidade em estoque e fornecedor são obrigatórios. Omitir descricao, enviar null ou texto vazio limpa a descrição anterior. As datas são administradas pelo banco.',
 
                 requestBody: {
                     $ref: '#/paths/~1produtos/post/requestBody'
