@@ -499,7 +499,14 @@ module.exports = {
 
                 responses: {
                     '200': {
-                        $ref: '#/paths/~1produtos~1{id}/get/responses/200'
+                        description: 'Fornecedor atualizado com sucesso.',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    $ref: '#/components/schemas/Fornecedor'
+                                }
+                            }
+                        }
                     },
                     '400': { description: 'ID ou dados do produto inválidos.' },
                     '404': { description: 'Produto ou fornecedor não encontrado.' },

@@ -60,11 +60,11 @@ A equipe implementará estas rotas:
 
 | Operação | Fornecedores | Produtos |
 |---|---|---|
-| Criar | `POST /api/fornecedores` | `POST /api/produtos` |
-| Listar | `GET /api/fornecedores` | `GET /api/produtos?fornecedor_id=1` |
-| Consultar um registro | `GET /api/fornecedores/:id` | `GET /api/produtos/:id` |
-| Atualizar | `PUT /api/fornecedores/:id` | `PUT /api/produtos/:id` |
-| Excluir | `DELETE /api/fornecedores/:id` | `DELETE /api/produtos/:id` |
+| Criar | `POST /fornecedores` | `POST /produtos` |
+| Listar | `GET /fornecedores` | `GET /fornecedores/:id/produtos` |
+| Consultar por ID | `GET /fornecedores/:id` | `GET /produtos/:id` |
+| Atualizar | `PUT /fornecedores/:id` | `PUT /produtos/:id` |
+| Excluir | `DELETE /fornecedores/:id` | `DELETE /produtos/:id` |
 
 As respostas terão mensagens claras para dados inválidos, registros inexistentes e exclusões bloqueadas. A interface exibirá essas mensagens ao usuário.
 
@@ -86,7 +86,7 @@ A organização do repositório será:
 | Pasta | Conteúdo |
 |---|---|
 | `/frontend` | Páginas, estilos e JavaScript da interface. |
-| `/backend` | Rotas, controladores, serviços e repositórios de dados. |
+| `/backend` | Rotas, controladores, middlewares e repositórios de dados. |
 | `/database` | Scripts de criação das tabelas e dados fictícios. |
 | `/documentacao` | Evidências, planejamento e material para o PDF. |
 
