@@ -1,4 +1,3 @@
 window.MERCADINHO_CONFIG = {
-  useApi: false,
-  apiBaseUrl: "http://localhost:3000/api",
+  apiBaseUrl: "https://mercadinho-sao-jose-api.vercel.app"
 };
