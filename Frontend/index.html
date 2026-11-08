@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Gerencie fornecedores, produtos e estoque do Mercadinho São José.">
+  <title>Gestão | Mercadinho São José</title>
+  <link rel="stylesheet" href="styles.css">
+  <script src="config.js" defer></script>
+  <script src="services.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#" data-action="home" aria-label="Mercadinho São José - início">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 52 52" role="img">
+          <rect width="52" height="52" rx="16" fill="#236b45"/>
+          <path d="M13 21h26l-2.3 20H15.3L13 21Z" fill="#fff"/>
+          <path d="M19 21v-4a7 7 0 0 1 14 0v4" fill="none" stroke="#fff" stroke-linecap="round" stroke-width="3"/>
+          <path d="M26 34v-8m0 3c-4.5 0-7-2.5-7-6 4.7 0 7 2.2 7 6Zm0-2c0-4.4 2.5-7 6.5-7 0 4.5-2 7-6.5 7Z" fill="#236b45"/>
+        </svg>
+      </span>
+      <span>
+        <strong>Mercadinho São José</strong>
+        <small>Gestão do mercadinho</small>
+      </span>
+    </a>
+    <nav aria-label="Navegação principal">
+      <a href="#" data-action="home" id="nav-home" class="nav-link is-active" hidden>Início</a>
+      <a href="#" data-action="suppliers" id="nav-suppliers" class="nav-link" hidden>Fornecedores</a>
+      <a href="#" data-action="sales-report" id="nav-report" class="nav-link" hidden>Vendas</a>
+      <button type="button" data-action="logout" id="logout-button" class="button button-secondary button-small" hidden>Sair</button>
+    </nav>
+  </header>
+
+  <main class="page-shell">
+    <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
+    <section id="app" aria-live="polite"></section>
+  </main>
+
+  <footer class="site-footer">
+    <span>Mercadinho São José</span>
+    <span>Gestão de fornecedores, produtos e estoque</span>
+  </footer>
+
+  <dialog id="confirm-dialog" class="confirm-dialog">
+    <form method="dialog">
+      <p class="eyebrow">Confirmação</p>
+      <h2 id="dialog-title">Excluir registro?</h2>
+      <p id="dialog-message">Esta ação não pode ser desfeita.</p>
+      <div class="dialog-actions">
+        <button class="button button-secondary" value="cancel">Cancelar</button>
+        <button id="dialog-confirm" class="button button-danger" value="confirm">Excluir</button>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>
