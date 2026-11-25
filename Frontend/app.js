@@ -162,7 +162,6 @@ async function handleSupplierSubmit(form) {
     return showFormError("Informe um telefone válido, com 10 a 15 dígitos.", [form.elements.telefone]);
   if (email && !form.elements.email.checkValidity()) return showFormError("Informe um e-mail válido.", [form.elements.email]);
   const id = form.dataset.id;
-  const id = form.dataset.id;
   const fornecedorDuplicado = data.fornecedores.find(item => {
     const mesmoRegistro = String(item.id) === String(id);
     const mesmoCnpj = String(item.cnpj).replace(/\D/g, "") === cnpj;
