@@ -14,7 +14,16 @@ function tratamentoErros(error, req, res, next) {
       mensagem: 'A operação não pôde ser concluída devido ao vínculo entre fornecedor e produto.'
     });
   }
-
+  
+  if (
+    error.code === '23505' &&
+    error.constraint === 'uq_fornecedores_cnpj'
+  ) {
+    return res.status(409).json({
+      mensagem: 'Já existe um fornecedor cadastrado com este CNPJ.'
+    });
+  }
+  
   const status = (
     Number.isInteger(error.status) &&
     error.status >= 400 &&
