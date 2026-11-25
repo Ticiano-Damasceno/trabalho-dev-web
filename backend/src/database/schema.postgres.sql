@@ -1,10 +1,11 @@
 CREATE TABLE IF NOT EXISTS fornecedores (
     id INTEGER GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     nome TEXT NOT NULL CHECK (length(trim(nome)) > 0),
-    cnpj VARCHAR(14) NOT NULL UNIQUE CHECK (
+    cnpj VARCHAR(14) NOT NULL CHECK (
         length(cnpj) = 14
         AND cnpj !~ '[^0-9]'
-    )
+    ),
+    CONSTRAINT uq_fornecedores_cnpj UNIQUE (cnpj)
 );
 
 CREATE TABLE IF NOT EXISTS produtos (
