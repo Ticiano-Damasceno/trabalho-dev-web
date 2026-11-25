@@ -162,8 +162,18 @@ async function handleSupplierSubmit(form) {
     return showFormError("Informe um telefone válido, com 10 a 15 dígitos.", [form.elements.telefone]);
   if (email && !form.elements.email.checkValidity()) return showFormError("Informe um e-mail válido.", [form.elements.email]);
   const id = form.dataset.id;
-  if (data.fornecedores.some(item => item.cnpj === cnpj && item.id !== Number(id)))
-    return showFormError("Já existe fornecedor com esse CNPJ.", [form.elements.cnpj]);
+  const id = form.dataset.id;
+  const fornecedorDuplicado = data.fornecedores.find(item => {
+    const mesmoRegistro = String(item.id) === String(id);
+    const mesmoCnpj = String(item.cnpj).replace(/\D/g, "") === cnpj;
+    return !mesmoRegistro && mesmoCnpj;
+  });
+  if (fornecedorDuplicado) {
+    return showFormError(
+      "Já existe outro fornecedor cadastrado com esse CNPJ.",
+      [form.elements.cnpj]
+    );
+  }
   try {
     const valores = { nome, cnpj, telefone, email };
     if (id) await services.data.updateSupplier(id, valores);
